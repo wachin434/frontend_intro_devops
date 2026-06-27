@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casino-frontend-deployment
+  namespace: default
+  labels:
+    app: casino-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: casino-frontend
+  template:
+    metadata:
+      labels:
+        app: casino-frontend
+    spec:
+      containers:
+      - name: casino-frontend
+        image: casino-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4200
+        resources:
+          requests:
+            cpu: "100m"
