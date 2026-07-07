@@ -9,5 +9,5 @@ spec:
     app: casino-frontend
   ports:
     - protocol: TCP
-      port: 4200
-      targetPort: 4200
+      port: 8080
+      targetPort: 8080
