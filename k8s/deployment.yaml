@@ -25,7 +25,21 @@ spec:
         image: casino-frontend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 4200
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 15
         resources:
           requests:
             cpu: "100m"
+          limits:
+            cpu: "200m"

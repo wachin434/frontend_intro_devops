@@ -12,24 +12,23 @@ export interface Tarea {
 export class TareasService {
   private http = inject(HttpClient);
 
-  // Importante: usamos localhost porque el NAVEGADOR del estudiante
-  // es quien hace la peticion (no el contenedor del frontend).
-  // Por eso redirigimos al puerto publicado por el backend en el host.
-  readonly baseUrl = 'http://localhost:3000';
+  // El frontend se sirve por nginx y enruta /api/* hacia el backend
+  // dentro del cluster Kubernetes usando DNS interno.
+  readonly baseUrl = '/api';
 
   listar(): Observable<Tarea[]> {
-    return this.http.get<Tarea[]>(`${this.baseUrl}/api/tareas`);
+    return this.http.get<Tarea[]>(`${this.baseUrl}/tareas`);
   }
 
   crear(titulo: string): Observable<Tarea> {
-    return this.http.post<Tarea>(`${this.baseUrl}/api/tareas`, { titulo });
+    return this.http.post<Tarea>(`${this.baseUrl}/tareas`, { titulo });
   }
 
   actualizar(id: number, cambios: Partial<Tarea>): Observable<Tarea> {
-    return this.http.patch<Tarea>(`${this.baseUrl}/api/tareas/${id}`, cambios);
+    return this.http.patch<Tarea>(`${this.baseUrl}/tareas/${id}`, cambios);
   }
 
   eliminar(id: number): Observable<Tarea> {
-    return this.http.delete<Tarea>(`${this.baseUrl}/api/tareas/${id}`);
+    return this.http.delete<Tarea>(`${this.baseUrl}/tareas/${id}`);
   }
 }
