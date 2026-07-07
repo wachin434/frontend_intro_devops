@@ -54,4 +54,9 @@ jobs:
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f casino-frontend-lb.yaml
         kubectl apply -f k8s/hpa.yaml
-        kubectl rollout status deployment/casino-frontend-deployment
+        kubectl rollout status deployment/casino-frontend-deployment --timeout=5m || {
+          kubectl get pods -l app=casino-frontend -o wide
+          kubectl describe deployment casino-frontend-deployment
+          kubectl get events --sort-by=.lastTimestamp | tail -n 20
+          exit 1
+        }
