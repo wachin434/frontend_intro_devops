@@ -10,7 +10,31 @@ RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.27-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN cat <<'EOF' > /etc/nginx/conf.d/default.conf
+server {
+	listen 8080;
+	server_name _;
+
+	root /usr/share/nginx/html;
+	index index.html;
+
+	location /api/ {
+		resolver kube-dns.kube-system.svc.cluster.local valid=10s ipv6=off;
+		set $backend_upstream casino-backend.default.svc.cluster.local:3000;
+		proxy_pass http://$backend_upstream;
+		proxy_http_version 1.1;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+	location / {
+		try_files $uri $uri/ /index.html;
+	}
+}
+EOF
+
 COPY --from=build /app/dist/tareas-frontend/browser/ /usr/share/nginx/html/
 
 EXPOSE 8080
