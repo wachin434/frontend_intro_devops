@@ -19,7 +19,9 @@ server {
 	index index.html;
 
 	location /api/ {
-		proxy_pass http://casino-backend:3000;
+		resolver kube-dns.kube-system.svc.cluster.local valid=10s ipv6=off;
+		set $backend_upstream casino-backend.default.svc.cluster.local:3000;
+		proxy_pass http://$backend_upstream;
 		proxy_http_version 1.1;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
