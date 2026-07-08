@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: casino-frontend
-        image: casino-frontend:latest
+        image: 507657261410.dkr.ecr.us-east-1.amazonaws.com/casino-frontend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -31,13 +31,13 @@ spec:
           httpGet:
             path: /
             port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 30
+          initialDelaySeconds: 5
+          periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /
             port: 8080
-          initialDelaySeconds: 30
+          initialDelaySeconds: 10
           periodSeconds: 15
         resources:
           requests:
