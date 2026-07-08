@@ -47,14 +47,15 @@ jobs:
       env:
         IMAGE_PATH: ${{ steps.build-image.outputs.registry }}/${{ steps.build-image.outputs.repository }}:${{ steps.build-image.outputs.tag }}
       run: |
-        kubectl apply -f k8s/deployment.yaml
-        kubectl set image deployment/casino-frontend-deployment casino-frontend=$IMAGE_PATH
+        kubectl set image --local -f k8s/deployment.yaml casino-frontend=$IMAGE_PATH -o yaml | kubectl apply -f -
         kubectl apply -f casino-frontend-lb.yaml
         kubectl apply -f k8s/hpa.yaml
         kubectl rollout status deployment/casino-frontend-deployment --timeout=5m || {
           kubectl get deployment casino-frontend-deployment -o wide
           kubectl get rs -l app=casino-frontend -o wide
           kubectl get pods -l app=casino-frontend -o wide
+          kubectl logs -l app=casino-frontend --all-containers=true --tail=120 || true
+          kubectl logs -l app=casino-frontend --all-containers=true --tail=120 --previous || true
           kubectl describe pod -l app=casino-frontend
           kubectl describe deployment casino-frontend-deployment
           kubectl get events --sort-by=.lastTimestamp | tail -n 20
